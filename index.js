@@ -2,6 +2,7 @@ import express from 'express';
 import { MongoClient, ObjectId } from 'mongodb';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import multer from 'multer';
 const app = express();
 const port = 3000;
 const conn_str = 'mongodb+srv://racemhachicha1:racem@cluster0.6vfqy2f.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
