@@ -12,6 +12,7 @@ const members = database.collection('members')
 const transports = database.collection('transports')
 const destinations = database.collection('destinations')
 const uploadCollection = database.collection('upload')
+const schedule = database.collection('schedule')
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -34,6 +35,15 @@ app.get("/transports", async(_, res) => {
   try{
     const allTransports = await transports.find({}).toArray();
     res.json(allTransports)
+  }catch(e){
+    console.log("ERROR : " + e)
+  }
+})
+
+app.get("/schedule", async(_, res) => {
+  try{
+    const allSchedule = await schedule.find({}).toArray();
+    res.json(allSchedule)
   }catch(e){
     console.log("ERROR : " + e)
   }
@@ -154,6 +164,16 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   } catch (error) {
     console.error('Error uploading file:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+//Schedule
+app.get("/schedule", async (req, res) => {
+  try {
+    const allSchedule = await schedule.find({}).toArray();
+    res.json(allSchedule);
+  } catch (e) {
+    console.log("ERROR: ", e);
   }
 });
 
