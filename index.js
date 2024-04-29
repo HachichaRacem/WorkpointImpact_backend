@@ -227,6 +227,34 @@ app.get("/schedule/:user/:date", async (req, res) => {
   }
 });
 
+app.get("/schedule/:user", async (req, res) => {
+  try {
+    const user = req.params.user;
+    const date = new Date(req.params.date);
+    const allSchedule = await schedule.find({ User: user }).toArray();
+    console.log("allSchedule", allSchedule);
+    const sortedResult = allSchedule.sort((a, b) => {
+      return b.sequence - a.sequence;
+    });
+    const driver = await members.findOne({ fullName: user });
+    const car = await transports.findOne({ _id: driver.vehicle });
+    var result = [];
+    for (const item of sortedResult) {
+      const dest = await destinations.findOne({ _id: item.Destination });
+      result.push({
+        ...item,
+        destination: dest,
+        car: car,
+      });
+    }
+
+    console.log("result", result);
+    res.json(result);
+  } catch (e) {
+    console.log("ERROR: ", e);
+  }
+});
+
 // Endpoint to fetch destination based on User
 app.get("/Destination?User", async (req, res) => {
   const { User } = req.params;
