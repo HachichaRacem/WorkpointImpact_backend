@@ -177,6 +177,38 @@ app.get("/schedule", async (req, res) => {
   }
 });
 
+app.get("/schedule/:id/:date", async (req, res) => {
+  try {
+    const id = req.params.id
+    const date  = new Date(req.params.date)
+    const allSchedule = await schedule.find({User:id,Date:date}).toArray();
+    console.log('allSchedule',allSchedule)
+    const destinationsName = Array.from(allSchedule, ({ Destination }) => 
+        Destination
+      );
+    const result = await destinations.find({name:{$in:destinationsName}}).toArray();
+    console.log('destination',result)
+    res.json(result);
+  } catch (e) {
+    console.log("ERROR: ", e);
+  }
+});
+
+// Endpoint to fetch destination based on User
+app.get('/Destination?User', async (req, res) => {
+  const { User } = req.params;
+  try {
+    const schedule = await Schedule.findOne({ User }); // Assuming there's a field named "User" in your Schedule model
+    if (!schedule) {
+      return res.status(404).json({ message: 'Schedule not found' });
+    }
+    res.json({ Destination: schedule.Destination });
+  } catch (error) {
+    console.error('Error fetching Destination:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
