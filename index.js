@@ -94,7 +94,12 @@ app.post("/members", async (req, res) => {
 app.get("/members", async (req, res) => {
   try {
     const allMembers = await members.find({}).toArray();
-    res.json(allMembers);
+    let data = [];
+    for (const member of allMembers) {
+      const car = await transports.findOne({ _id: member.vehicle });
+      data.push({ ...member, vehicle: car });
+    }
+    res.json(data);
   } catch (e) {
     console.log("ERROR : " + e);
   }
