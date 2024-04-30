@@ -198,12 +198,12 @@ app.get("/schedule/:user/:date", async (req, res) => {
       .toArray();
     console.log("allSchedule", allSchedule);
     const sortedResult = allSchedule.sort((a, b) => {
-      return b.sequence - a.sequence;
+      return a.sequence - b.sequence;
     });
     var result = [];
     for (const item of sortedResult) {
       const dest = await destinations.findOne({ _id: item.Destination });
-      result.push(dest);
+      result.push({ ...item, Destination: dest });
     }
 
     const driver = await members.findOne({ fullName: user });
@@ -221,7 +221,7 @@ app.get("/schedule/:user/:date", async (req, res) => {
     // });
 
     const data = {
-      points: result,
+      schedule: result,
       car: car,
     };
 
@@ -237,10 +237,13 @@ app.get("/schedule/:user", async (req, res) => {
     const user = req.params.user;
     const date = new Date(req.params.date);
     const allSchedule = await schedule.find({ User: user }).toArray();
+
+    // const allSchedule = await scheduleModel.find({ User: user }).toArray();
     console.log("allSchedule", allSchedule);
     const sortedResult = allSchedule.sort((a, b) => {
       return b.sequence - a.sequence;
     });
+    console.log("🚀 ~ sortedResult ~ sortedResult:", sortedResult);
     const driver = await members.findOne({ fullName: user });
     const car = await transports.findOne({ _id: driver.vehicle });
     var result = [];
