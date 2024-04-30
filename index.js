@@ -158,24 +158,31 @@ app.get("/transports", async (req, res) => {
 // File Upload Route
 app.post("/upload", upload.single("file"), async (req, res) => {
   try {
-    const file = req.file;
-    if (!file) {
+    if (!req.file || !req.file.buffer) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const result = await uploadCollection.insertOne({
-      filename: file.originalname,
-      contentType: file.mimetype,
-      data: file.buffer,
-    });
+    const bufferArray = req.file.buffer;
+    const wb = XLSX.read(bufferArray, { type: "buffer" });
+    const wsname = wb.SheetNames[0];
+    const ws = wb.Sheets[wsname];
+    const data = XLSX.utils.sheet_to_json(ws);
 
-    res.status(201).json({
-      message: "File uploaded successfully",
-      fileId: result.insertedId,
-    });
+    // Insert Excel data into the database
+    await excelDataCollection.insertMany(data);
+
+    res.json({ message: "Data uploaded successfully." });
   } catch (error) {
-    console.error("Error uploading file:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error uploading Excel data:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+app.get("/upload", async (req, res) => {
+  try {
+    const destinations = await excelDataCollection.find().toArray();
+    res.json(destinations);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching data" });
   }
 });
 
