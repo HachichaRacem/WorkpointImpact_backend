@@ -1,19 +1,19 @@
 const mongoose = require("mongoose");
 
 const ScheduleSchema = new mongoose.Schema({
-  Date: Date,
-  Slot: String,
-  User: {
+  date: Date,
+  slot: String,
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Member",
   },
-  Type: String,
-  Adresse: String,
+  type: String,
+  adresse: String,
   codePostal: Number,
-  Zone: String,
+  zone: String,
   sequence: Number,
 
-  Destination: {
+  destination: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Destination",
   },

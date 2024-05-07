@@ -1,9 +1,9 @@
 // services/ScheduleService.js
-const ScheduleModel = require('../models/Schedule');
+const Schedule = require('../models/Schedule');
 
 exports.getAllSchedules = async () => {
   try {
-    return  await ScheduleModel.find({});
+    return  await Schedule.find({});
   } catch (error) {
     throw error;
   }
@@ -24,4 +24,16 @@ exports.getAllSchedulesByUser = async (user) => {
   } catch (error) {
     throw error;
   }
+};
+exports.getScheduleForUserAndDate = async (user,date) => {
+  try {
+  const allSchedule = await Schedule
+    .find({ user: user, date: date }).populate([{ path: 'destination' }, { path: 'user', populate: { path: 'vehicle' } }])
+    .sort({ sequence: 1 });
+  console.log("allSchedule", allSchedule);
+  return allSchedule;
+} catch (e) {
+  console.log("ERROR: ", e);
+  throw e.message
+}
 };

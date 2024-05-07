@@ -39,18 +39,30 @@ exports.uploadScheduleData = async (req, res) => {
     res.status(500).json({ message: 'Internal Server Error' });
   }
 };
-exports.getScheduleForUserAndDate = async (req, res) => {
+/*exports.getScheduleForUserAndDate = async (req, res) => {
   try {
   const user = req.params.user;
   const date = new Date(req.params.date);
   const allSchedule = await schedule
-    .find({ User: user, Date: date }).populate([{ path: 'Destination' }, { path: 'User', populate: { path: 'vehicle' } }])
+    .find({ user: user, date: date }).populate([{ path: 'destination' }, { path: 'user', populate: { path: 'vehicle' } }])
     .sort({ sequence: 1 });
   console.log("allSchedule", allSchedule);
   res.json(allSchedule);
 } catch (e) {
   console.log("ERROR: ", e);
 }
+};*/
+exports.getScheduleForUserAndDate = async (req, res) => {
+  try {
+    const user = req.params.user;
+    const date = new Date(req.params.date);
+    const allSchedules = await scheduleService.getScheduleForUserAndDate(user,date);
+    
+    res.json(allSchedules);
+  } catch (error) {
+    console.error("Error fetching schedules:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 exports.getAllSchedulesByUser = async (req, res) => {
   try {
