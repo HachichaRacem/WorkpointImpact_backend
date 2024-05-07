@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 const ScheduleSchema = new mongoose.Schema({
   Date: Date,
   Slot: String,
-  User: String,
+  User: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Member",
+  },
   Type: String,
   Adresse: String,
   codePostal: Number,
