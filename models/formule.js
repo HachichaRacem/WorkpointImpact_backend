@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const formuleSchema = new mongoose.Schema({
-    fullName: String,
-    value: { type: mongoose.Schema.Types.Decimal128 },
+    name: String,
+    value: String,
 });
 
 module.exports = mongoose.model("formule", formuleSchema);

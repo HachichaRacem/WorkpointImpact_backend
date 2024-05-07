@@ -3,7 +3,7 @@ const Member = require("../models/Member");
 
 exports.getAllMembers = async (req, res) => {
   try {
-    return await Member.find({});
+    return await Member.find({}).populate('vehicle');
   } catch (error) {
     console.error("Error fetching members:", error);
     throw new Error("Failed to fetch members");
@@ -22,7 +22,7 @@ exports.updateMember= async (memberId, newData)=> {
   console.log("member",memberId);
   console.log("data",newData);
   try {
-    const updatedMember = await Member.findByIdAndUpdate(memberId, newData, { new: true });
+    const updatedMember = await Member.findByIdAndUpdate(memberId, newData, { new: true }).populate('vehicle');
     return updatedMember;
   } catch (error) {
     throw new Error(`Failed to update member: ${error.message}`);

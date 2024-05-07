@@ -4,6 +4,7 @@ const Member = require('../models/Member');
 const Destination = require('../models/Destination');
 const memberService = require("../services/Member.js");
 const destinationService = require("../services/Destination");
+const XLSX = require('xlsx');
 
 
 exports.getAllSchedules = async () => {
@@ -23,7 +24,8 @@ exports.uploadScheduleData = async (file) => {
     const ws = wb.Sheets[wsname];
     const data = XLSX.utils.sheet_to_json(ws);
     console.log("data", data);
-    const newData = data.map(async item => {
+    const newData = await Promise.all(
+     data.map(async item => {
       var idUser = await Member.findOne({ fullName: {
         $regex: new RegExp(item.User.toLowerCase(), 'i')
      } })
@@ -40,11 +42,13 @@ exports.uploadScheduleData = async (file) => {
       idDestination = await destinationService.createDestination({name:item.Destination,address:item.Adresse,postalCode:item["Code Postal"],zone:item.Zone})
       
      }
-      return { user: idUser, date: item.Date, slot: item.Slot, zone: item.zone, codepostal: item["Code Postal"], adresse: item.Adresse, type: item.Type, destination: idDestination }
-    }
+     console.log("idUser",idUser,idDestination)
+      return { user: idUser._id, date: new Date(item.Date), slot: item.Slot, zone: item.Zone, codepostal: item["Code Postal"], adresse: item.Adresse, type: item.Type, destination: idDestination._id }
+    })
     )
     // Insert Excel data into the database
-    await Schedule.insertMany(data);
+    console.log("newdata",newData);
+    await Schedule.insertMany(newData);
   } catch (error) {
     throw new Error(`Error uploading schedule data: ${error.message}`);
   }

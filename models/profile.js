@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const profileSchema = new mongoose.Schema({
-    fullName: String,
-    Privillage: String,
+    name: String,
+    description : String,
+    privillages: [],
 });
 
 

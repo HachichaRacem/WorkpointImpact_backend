@@ -12,6 +12,10 @@ const memberSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Transport",
   },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Profile",
+  },
 });
 
 module.exports = mongoose.model("Member", memberSchema);

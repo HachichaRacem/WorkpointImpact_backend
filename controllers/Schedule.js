@@ -24,14 +24,9 @@ exports.uploadScheduleData = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const bufferArray = req.file.buffer;
-    const wb = XLSX.read(bufferArray, { type: 'buffer' });
-    const wsname = wb.SheetNames[0];
-    const ws = wb.Sheets[wsname];
-    const data = XLSX.utils.sheet_to_json(ws);
-
+    
     // Upload Excel data to the schedule
-    await scheduleService.uploadScheduleData(data);
+    await scheduleService.uploadScheduleData(req.file);
 
     res.json({ message: 'Schedule data uploaded successfully.' });
   } catch (error) {
