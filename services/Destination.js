@@ -17,3 +17,11 @@ exports.createDestination = async (destinationData) => {
     throw new Error("Failed to create destination");
   }
 };
+exports.updateDestination = async (destinationtId, updateData) => {
+  try {
+    return await Destination.findByIdAndUpdate(destinationtId, updateData, { new: true });
+  } catch (error) {
+    console.error("Error updating member:", error);
+    throw new Error("Failed to update member");
+  }
+};

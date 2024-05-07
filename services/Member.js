@@ -1,7 +1,7 @@
 // services/memberService.js
 const Member = require("../models/Member");
 
-exports.getAllMembers = async () => {
+exports.getAllMembers = async (req, res) => {
   try {
     return await Member.find({});
   } catch (error) {
@@ -18,12 +18,14 @@ exports.createMember = async (memberData) => {
     throw new Error("Failed to create member");
   }
 };
-
-exports.updateMember = async (memberId, updateData) => {
+exports.updateMember= async (memberId, newData)=> {
+  console.log("member",memberId);
+  console.log("data",newData);
   try {
-    return await Member.findByIdAndUpdate(memberId, { $set: updateData }, { new: true });
+    const updatedMember = await Member.findByIdAndUpdate(memberId, newData, { new: true });
+    return updatedMember;
   } catch (error) {
-    console.error("Error updating member:", error);
-    throw new Error("Failed to update member");
+    throw new Error(`Failed to update member: ${error.message}`);
   }
-};
+}
+

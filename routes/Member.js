@@ -5,6 +5,5 @@ const memberController = require("../controllers/Member");
 
 router.get("/", memberController.getAllMembers);
 router.post("/", memberController.createMember);
-router.patch("/", memberController.updateMember);
-
+router.put('/update/:id', memberController.updateMember);
 module.exports = router;

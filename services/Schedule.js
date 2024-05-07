@@ -18,3 +18,10 @@ exports.uploadScheduleData = async (data) => {
     throw new Error(`Error uploading schedule data: ${error.message}`);
   }
 };
+exports.getAllSchedulesByUser = async (user) => {
+  try {
+    return await Schedule.find({ User: user }).populate("Destination");
+  } catch (error) {
+    throw error;
+  }
+};

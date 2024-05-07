@@ -17,3 +17,11 @@ exports.createTransport = async (transportData) => {
     throw new Error("Failed to create transport");
   }
 };
+exports.updateTransport = async (transportId, updateData) => {
+  try {
+    return await Transport.findByIdAndUpdate(transportId, updateData, { new: true });
+  } catch (error) {
+    console.error("Error updating member:", error);
+    throw new Error("Failed to update member");
+  }
+};

@@ -19,3 +19,14 @@ exports.createTransport = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+exports.updateTransport = async (req, res) => {
+  const  transportId  = req.params.id;
+  const updateData = req.body;
+  try {
+    const updatedTransport = await transportService.updateTransport(transportId, updateData);
+    res.status(200).json(updatedTransport);
+  } catch (error) {
+    console.error("Controller error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
