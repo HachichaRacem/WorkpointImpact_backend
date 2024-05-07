@@ -4,6 +4,7 @@ const members = require('../models/Member');
 const transports = require('../models/Transport');
 const schedule=require('../models/Schedule')
 const XLSX = require('xlsx');
+const { patch } = require('../routes/Member');
 
 
 exports.getAllSchedules = async (req, res) => {
@@ -43,28 +44,9 @@ exports.getScheduleForUserAndDate = async (req, res) => {
   const user = req.params.user;
   const date = new Date(req.params.date);
   const allSchedule = await schedule
-    .find({ User: user, Date: date })
+    .find({ User: user, Date: date }).populate([{path:Destination},{path:User,populate:{path:vehicle}}]).sort({sequence:1})
   console.log("allSchedule", allSchedule);
-  const sortedResult = allSchedule.sort((a, b) => {
-    return a.sequence - b.sequence;
-  });
-  var result = [];
-  for (const item of sortedResult) {
-    const dest = await destinations.findOne({ _id: item.Destination });
-    result.push({ ...item, Destination: dest });
-  }
-  
-  const driver = await members.findOne({ fullName: user });
-  const car = await transports.findOne({ _id: driver.vehicle });
-
-
-  const data = {
-    schedule: result,
-    car: car,
-  };
-
-  console.log("destination", data);
-  res.json(data);
+  res.json(allSchedule);
 } catch (e) {
   console.log("ERROR: ", e);
 }
