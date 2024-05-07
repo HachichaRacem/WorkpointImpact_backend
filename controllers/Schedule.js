@@ -44,7 +44,8 @@ exports.getScheduleForUserAndDate = async (req, res) => {
   const user = req.params.user;
   const date = new Date(req.params.date);
   const allSchedule = await schedule
-    .find({ User: user, Date: date }).populate([{path:Destination},{path:User,populate:{path:vehicle}}]).sort({sequence:1})
+    .find({ User: user, Date: date }).populate([{ path: 'Destination' }, { path: 'User', populate: { path: 'vehicle' } }])
+    .sort({ sequence: 1 });
   console.log("allSchedule", allSchedule);
   res.json(allSchedule);
 } catch (e) {
