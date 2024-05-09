@@ -4,4 +4,4 @@ const formuleSchema = new mongoose.Schema({
     value: String,
 });
 
-module.exports = mongoose.model("formule", formuleSchema);
+module.exports = mongoose.model("Formule", formuleSchema);

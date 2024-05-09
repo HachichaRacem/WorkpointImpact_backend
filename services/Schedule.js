@@ -9,13 +9,11 @@ const XLSX = require('xlsx');
 
 exports.getAllSchedules = async () => {
   try {
-    return await Schedule.find({});
+    return await Schedule.find({}).populate([{ path: 'destination' }, { path: 'user', populate: { path: 'vehicle' } }]);
   } catch (error) {
     throw error;
   }
 };
-
-
 exports.uploadScheduleData = async (file) => {
   try {
     const bufferArray = file.buffer;
@@ -29,26 +27,34 @@ exports.uploadScheduleData = async (file) => {
       var idUser = await Member.findOne({ fullName: {
         $regex: new RegExp(item.User.toLowerCase(), 'i')
      } })
-      var idDestination = await Destination.findOne({ destination: {
+      var idDestination = await Destination.findOne({ name: {
         $regex: new RegExp(item.Destination.toLowerCase(), 'i')
      } })
-     if(!idUser){
+     if(idUser && idDestination){
+      return { user: idUser._id, date: new Date(item.Date), slot: item.Slot, zone: item.Zone, codepostal: item["Code Postal"], adresse: item.Adresse, type: item.Type, destination: idDestination._id }
+
+     }
+     else{
+      return null
+     }
+     /*if(!idUser){
 
       idUser = await memberService.createMember({fullName:item.User})
       
-     }
-     if(!idDestination){
+     }*/
+     /*if(!idDestination){
 
       idDestination = await destinationService.createDestination({name:item.Destination,address:item.Adresse,postalCode:item["Code Postal"],zone:item.Zone})
       
-     }
-     console.log("idUser",idUser,idDestination)
-      return { user: idUser._id, date: new Date(item.Date), slot: item.Slot, zone: item.Zone, codepostal: item["Code Postal"], adresse: item.Adresse, type: item.Type, destination: idDestination._id }
+     }*/
+     
+      /*return { user: idUser._id, date: new Date(item.Date), slot: item.Slot, zone: item.Zone, codepostal: item["Code Postal"], adresse: item.Adresse, type: item.Type, destination: idDestination._id }*/
     })
     )
-    // Insert Excel data into the database
+    //console.log("idUser",idUser,idDestination)
     console.log("newdata",newData);
-    await Schedule.insertMany(newData);
+    const validData = newData.filter(item => item !== null);
+    await Schedule.insertMany(validData);
   } catch (error) {
     throw new Error(`Error uploading schedule data: ${error.message}`);
   }

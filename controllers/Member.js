@@ -1,4 +1,3 @@
-// controllers/memberController.js
 const memberService = require("../services/Member.js");
 
 exports.getAllMembers = async (req, res) => {

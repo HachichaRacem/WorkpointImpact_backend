@@ -1,9 +1,9 @@
-// services/memberService.js
+
 const Member = require("../models/Member");
 
 exports.getAllMembers = async (req, res) => {
   try {
-    return await Member.find({}).populate('vehicle');
+    return await Member.find({}).populate([{path :'vehicle'},{path:'profile'}]);
   } catch (error) {
     console.error("Error fetching members:", error);
     throw new Error("Failed to fetch members");

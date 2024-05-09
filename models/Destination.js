@@ -4,7 +4,7 @@ const DestinationSchema = new mongoose.Schema({
     name: String,
     email: String,
     phoneNumber: String,
-    type: Number,
+    type: String,
     address: String,
     postalCode: String,
   
