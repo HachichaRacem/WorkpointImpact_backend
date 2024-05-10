@@ -5,7 +5,12 @@ const Destination = require('../models/Destination');
 const memberService = require("../services/Member.js");
 const destinationService = require("../services/Destination");
 const XLSX = require('xlsx');
-
+const excelSerialNumberToDate = (serialNumber) => {
+  const MS_PER_DAY = 24 * 60 * 60 * 1000; // Number of milliseconds per day
+  const EPOCH_OFFSET = 25569; // Excel serial numbers start from this date (January 1, 1970)
+  const date = new Date((serialNumber - EPOCH_OFFSET) * MS_PER_DAY);
+  return date;
+};
 
 exports.getAllSchedules = async () => {
   try {
@@ -31,7 +36,7 @@ exports.uploadScheduleData = async (file) => {
         $regex: new RegExp(item.Destination.toLowerCase(), 'i')
      } })
      if(idUser && idDestination){
-      return { user: idUser._id, date: new Date(item.Date), slot: item.Slot, zone: item.Zone, codepostal: item["Code Postal"], adresse: item.Adresse, type: item.Type, destination: idDestination._id }
+      return { user: idUser._id, date:excelSerialNumberToDate(item.Date), slot: item.Slot, zone: item.Zone, codepostal: item["Code Postal"], adresse: item.Adresse, type: item.Type, destination: idDestination._id }
 
      }
      else{
