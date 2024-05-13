@@ -6,8 +6,8 @@ const memberService = require("../services/Member.js");
 const destinationService = require("../services/Destination");
 const XLSX = require('xlsx');
 const excelSerialNumberToDate = (serialNumber) => {
-  const MS_PER_DAY = 24 * 60 * 60 * 1000; // Number of milliseconds per day
-  const EPOCH_OFFSET = 25569; // Excel serial numbers start from this date (January 1, 1970)
+  const MS_PER_DAY = 24 * 60 * 60 * 1000; 
+  const EPOCH_OFFSET = 25569;
   const date = new Date((serialNumber - EPOCH_OFFSET) * MS_PER_DAY);
   return date;
 };
@@ -40,7 +40,8 @@ exports.uploadScheduleData = async (file) => {
 
      }
      else{
-      return null
+      console.log("User or destination not found for item:", item);
+      return { invalidItem: item };
      }
      /*if(!idUser){
 
@@ -57,9 +58,12 @@ exports.uploadScheduleData = async (file) => {
     })
     )
     //console.log("idUser",idUser,idDestination)
+    const hasInvalidData = newData.some(item => item.invalidItem !== undefined);
+    if (hasInvalidData) {
+      throw new Error("Some data could not be uploaded due to missing user or destination information.");
+    }
     console.log("newdata",newData);
-    const validData = newData.filter(item => item !== null);
-    await Schedule.insertMany(validData);
+    await Schedule.insertMany(newData);
   } catch (error) {
     throw new Error(`Error uploading schedule data: ${error.message}`);
   }
