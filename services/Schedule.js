@@ -4,6 +4,7 @@ const Member = require('../models/Member');
 const Destination = require('../models/Destination');
 const memberService = require("../services/Member.js");
 const destinationService = require("../services/Destination");
+const ScheduleService = require("../services/Schedule");
 const XLSX = require('xlsx');
 const excelSerialNumberToDate = (serialNumber) => {
   const MS_PER_DAY = 24 * 60 * 60 * 1000; 
@@ -62,8 +63,18 @@ exports.uploadScheduleData = async (file) => {
     if (hasInvalidData) {
       throw new Error("Some data could not be uploaded due to missing user or destination information.");
     }
+    
     console.log("newdata",newData);
     await Schedule.insertMany(newData);
+    
+    const scheduleData = await Promise.all(newData.map(async item => {
+      if (!item.invalidItem) {
+        await ScheduleService.getScheduleForUserAndDate(item.user, item.date);
+      }
+    }));
+    console.log("scheduleData",scheduleData);
+    return scheduleData;
+    
   } catch (error) {
     throw new Error(`Error uploading schedule data: ${error.message}`);
   }
