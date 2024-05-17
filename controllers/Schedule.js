@@ -1,11 +1,10 @@
-const scheduleService = require('../services/Schedule');
-const destinations = require('../models/Destination');
-const members = require('../models/Member');
-const transports = require('../models/Transport');
-const schedule=require('../models/Schedule')
-const XLSX = require('xlsx');
-const { patch } = require('../routes/Member');
-
+const scheduleService = require("../services/Schedule");
+const destinations = require("../models/Destination");
+const members = require("../models/Member");
+const transports = require("../models/Transport");
+const schedule = require("../models/Schedule");
+const XLSX = require("xlsx");
+const { patch } = require("../routes/Member");
 
 exports.getAllSchedules = async (req, res) => {
   try {
@@ -13,25 +12,36 @@ exports.getAllSchedules = async (req, res) => {
     res.json(allSchedules);
   } catch (error) {
     console.error("Error fetching schedules:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(400).json({ message: "Internal Server Error" });
   }
 };
 
+exports.addScheduleData = async (req, res) => {
+  try {
+    await scheduleService.addScheduleData(req.body);
+    res.json({ status: 200, message: "success" });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
 
 exports.uploadScheduleData = async (req, res) => {
   try {
+    console.log("hello!!!!!!", req.file);
     if (!req.file || !req.file.buffer) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      return res.status(400).json({ message: "No file uploaded" });
     }
 
-    
-    // Upload Excel data to the schedule
-    await scheduleService.uploadScheduleData(req.file);
+    const data = await scheduleService.uploadScheduleData(req.file);
 
-    res.json({ message: 'Schedule data uploaded successfully.' });
+    res.json({
+      message: "Schedule data uploaded successfully.",
+      data: data,
+      status: 200,
+    });
   } catch (error) {
-    console.error('Error uploading Excel data:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.log("Error uploading Excel data:", error);
+    res.status(400).json({ message: "Internal Server Error" });
   }
 };
 /*exports.getScheduleForUserAndDate = async (req, res) => {
@@ -51,12 +61,15 @@ exports.getScheduleForUserAndDate = async (req, res) => {
   try {
     const user = req.params.user;
     const date = new Date(req.params.date);
-    const allSchedules = await scheduleService.getScheduleForUserAndDate(user,date);
-    
+    const allSchedules = await scheduleService.getScheduleForUserAndDate(
+      user,
+      date
+    );
+
     res.json(allSchedules);
   } catch (error) {
     console.error("Error fetching schedules:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(400).json({ message: "Internal Server Error" });
   }
 };
 exports.getAllSchedulesByUser = async (req, res) => {
@@ -66,6 +79,6 @@ exports.getAllSchedulesByUser = async (req, res) => {
     res.json(allSchedules);
   } catch (error) {
     console.error("Error fetching schedules:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(400).json({ message: "Internal Server Error" });
   }
 };
