@@ -1,6 +1,6 @@
 const scheduleService = require("../services/Schedule");
 const destinations = require("../models/Destination");
-const members = require("../models/Member");
+
 const transports = require("../models/Transport");
 const schedule = require("../models/Schedule");
 const XLSX = require("xlsx");

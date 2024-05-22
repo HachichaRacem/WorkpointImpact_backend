@@ -1,10 +1,12 @@
 // services/ScheduleService.js
 const Schedule = require("../models/Schedule");
-const Member = require("../models/Member");
+const Member = require("../models/member");
+const CarbonEmission =require("../models/CarbonEmission.js")
 const Destination = require("../models/Destination");
 const memberService = require("../services/Member.js");
 const destinationService = require("../services/Destination");
 const ScheduleService = require("../services/Schedule");
+const transport =require("../models/Transport.js")
 const XLSX = require("xlsx");
 const axios = require("axios");
 
@@ -133,6 +135,7 @@ exports.uploadScheduleData = async (file) => {
         if (idUser && idDestination && idUser.vehicle) {
           return {
             user: idUser._id,
+            vehicle:idUser.vehicle,
             date: excelSerialNumberToDate(item["Date Activité"]),
             slot: item["Séance"],
             zone: item["Commune"],
@@ -247,12 +250,27 @@ exports.uploadScheduleData = async (file) => {
 
 exports.addScheduleData = async (data) => {
   try {
-    // await Schedule.insertMany(data.scheduleData);
-    //add model carbonEmission
-    //add in carbon emission data.totalDuration and data.totalDistance + calcul carbonEmission with formula
 
-    return 200;
+    const { user, date,vehicle } = data.scheduleData[0];
+    idVehicle = await transport.findOne({_id:vehicle})
+    const totalDistance = data.totalDistance; 
+    const totalDuration = data.totalDuration; 
+    const carbonEmissionRate = 0.2; 
+    const totalEmissions = (totalDistance/100) *idVehicle.fuelcons;
+    const carbonEmissionData = {
+      user :user,
+      date:date,
+      totalDistance: totalDistance,
+      totalDuration: totalDuration,
+      carbonEmission: totalEmissions,
+      formule:"664bdc1ea0d1ff193c5e5024"
+    
+    };
+    await CarbonEmission.create(carbonEmissionData);
+    await Schedule.insertMany(data.scheduleData);
+    return { status: 200, message: 'Data added successfully' };
   } catch (error) {
+    console.error(error);
     throw error;
   }
 };

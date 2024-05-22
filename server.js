@@ -9,7 +9,8 @@ const destinationRoutes = require("./routes/Destination");
 const transportRoutes = require("./routes/Transport");
 const scheduleRoutes = require('./routes/Schedule');
 const profileRoutes = require("./routes/Profile");
-//const formuleRoutes = require("./routes/Formule");
+const formuleRoutes = require("./routes/Formule");
+const carbonemissionRoutes = require("./routes/CarbonEmission");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -30,7 +31,8 @@ app.use("/destinations", destinationRoutes);
 app.use("/transports", transportRoutes);
 app.use("/schedule", scheduleRoutes);
 app.use("/profiles",profileRoutes);
-//app.use("/formules",formuleRoutes);
+app.use("/formules",formuleRoutes);
+app.use("/carbonemissions",carbonemissionRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
