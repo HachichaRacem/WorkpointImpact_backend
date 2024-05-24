@@ -8,6 +8,18 @@ exports.getAllCarbonEmission = async(req,res)=>{
     }
     
     }
+     exports.getCarbonEmissionsByDate = async (date) => {
+      try {
+        // Ensure the date is in ISO format for consistency
+        const emissions = await carbonemission.find({
+         date : date}).populate('user').populate('formule');
+        
+        return emissions;
+      } catch (error) {
+        throw new Error(`Error fetching carbon emissions: ${error.message}`);
+      }
+    }
+
     exports.createformule = async (formuleData) => {
         try {
           return await carbonemission.create(formuleData);
