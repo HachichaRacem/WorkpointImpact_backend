@@ -1,5 +1,6 @@
 // models/Member.js
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 
 const memberSchema = new mongoose.Schema({
   fullName: String,
@@ -21,14 +22,25 @@ const memberSchema = new mongoose.Schema({
     //  required: true
   },
   salt: String,
+  passwordText: String 
 });
-UserSchema.methods = {
+memberSchema.virtual("password")
+  .set(function (password) {
+    console.log('password in model',password)
+    this._password = password;
+    this.salt = this.makeSalt();
+    this.hashed_password = this.encryptPassword(password);
+  })
+  .get(function () {
+    return this._password;
+  });
+memberSchema.methods = {
   authenticate: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },
 
-  authenticate_old_password: function (plainText) {
-    return this.encryptPassword(plainText) === this.old_password;
+  makeSalt: function () {
+    return Math.round(new Date().valueOf() * Math.random()) + "";
   },
 
   encryptPassword: function (password) {

@@ -1,5 +1,6 @@
 const member = require("../models/member.js");
 const memberService = require("../services/Member.js");
+const jwt = require("jsonwebtoken");
 
 exports.getAllMembers = async (req, res) => {
   try {
@@ -32,19 +33,13 @@ exports.updateMember=async(req, res)=> {
     res.status(500).json({ error: error.message });
   }
 };
-exports.signinAdmin = (req, res) => {
+exports.  signinAdmin = (req, res) => {
   const { email, password } = req.body;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const firstError = errors.array().map((error) => error.msg)[0];
-    return res.status(422).json({
-      errors: firstError,
-    });
-  } else {
-    // check if user exist
+  console.log(req.body);
     member.findOne({
-      email,
+      email: email,
     }).populate("profile").exec((err, user) => {
+      console.log("user : ", user);
       if (err || !user) {
         return res.status(400).json({
           status: 400,
@@ -52,16 +47,6 @@ exports.signinAdmin = (req, res) => {
         });
         // return res.status(400).json({
         //   errors: "User with that email does not exist. Please signup",
-        // });
-      }
-      // authenticate
-      if (!user.authenticate(password)) {
-        return res.status(400).json({
-          status: 400,
-          message: "Email and password do not match",
-        });
-        // return res.status(400).json({
-        //   errors: "Email and password do not match",
         // });
       }
       if (
@@ -75,56 +60,75 @@ exports.signinAdmin = (req, res) => {
             "Connection denied ! Your are not authorized to access to this plateform",
         });
       }
+      // authenticate
+      if (!user.authenticate(password)) {
+        return res.status(400).json({
+          status: 400,
+          message: "Email and password do not match",
+        });
+        // return res.status(400).json({
+        //   errors: "Email and password do not match",
+        // });
+      }
+      console.log('user',user)
+      
       // generate a token and send to client
       const token = jwt.sign(
         {
           id: user._id,
-          firstname: user.firstname,
-          lastname: user.lastname,
-          Email: user.Email,
-          admin: user.admin,
+          fullName: user.fullName,
+          email: user.email,
+          profile: user.profile,
         },
-        process.env.JWT_SECRET,
+        "actl",
         {
           // expiresIn: "1800s",
           expiresIn: "1d",
         }
       );
-      const { firstname, lastname, Email } = user;
+      const { fullName, email } = user;
       const refresh_token = jwt.sign(
         {
           id: user._id,
         },
-        process.env.JWT_ADMIN_SECRET_REFRESH,
+        "azer",
         {
-          expiresIn: "4d",
+          expiresIn: "30d",
         }
       );
-      User.updateOne(
-        {
-          _id: user._id,
-        },
-        {
-          last_connection: moment().format(),
-          // isLoggedOut: false,
-        }
-      )
-        .then(() => {
-          console.log("updated");
-        })
-        .catch((e) => {
-          console.log(e);
-        });
       console.log("tokeens in signin", { token, refresh_token });
       return res.json({
         token,
         user: {
-          firstname,
-          lastname,
-          Email,
+          fullName,
+          email,
         },
         refresh_token,
       });
     });
+  
+};
+exports.requireSignin = (req, res, next) => {
+  // const token =
+  //   req.body.token || req.query.token || req.headers["x-access-token"];
+  const token = req.headers["x-access-token"];
+  if (!token) {
+    return res.status(403).json({
+      errors: "A token is required for authentication",
+    });
+  } else {
+    
+      console.log('token',token)
+      jwt.verify(token,"actl" , async (err, decodedToken) => {
+        if (err) {
+          console.log('err',err)
+          return res.status(401).json("Invalid or expired token");
+        } else {
+          
+          req.user = decodedToken;
+          return next();
+        }
+      });
+    
   }
 };
