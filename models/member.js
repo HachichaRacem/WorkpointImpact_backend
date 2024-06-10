@@ -1,4 +1,3 @@
-// models/Member.js
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 
@@ -56,3 +55,4 @@ memberSchema.methods = {
   },
 }
 module.exports = mongoose.model("Member", memberSchema);
+

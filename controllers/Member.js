@@ -83,7 +83,7 @@ exports.  signinAdmin = (req, res) => {
         "actl",
         {
           // expiresIn: "1800s",
-          expiresIn: "1d",
+          expiresIn: "120s",
         }
       );
       const { fullName, email } = user;
@@ -93,7 +93,7 @@ exports.  signinAdmin = (req, res) => {
         },
         "azer",
         {
-          expiresIn: "30d",
+          expiresIn: "120s",
         }
       );
       console.log("tokeens in signin", { token, refresh_token });
@@ -108,7 +108,7 @@ exports.  signinAdmin = (req, res) => {
     });
   
 };
-exports.requireSignin = (req, res, next) => {
+/*exports.requireSignin = (req, res, next) => {
   // const token =
   //   req.body.token || req.query.token || req.headers["x-access-token"];
   const token = req.headers["x-access-token"];
@@ -131,4 +131,5 @@ exports.requireSignin = (req, res, next) => {
       });
     
   }
-};
+};*/
+

@@ -2,6 +2,7 @@
 const Member = require("../models/member");
 const profile = require("../models/profile");
 var generator = require("generate-password");
+const nodemailer = require('nodemailer');
 
 exports.getAllMembers = async (req, res) => {
   try {
@@ -31,6 +32,7 @@ exports.createMember = async (memberData) => {
       await newMember.save()
       console.log('newMember',newMember)
       console.log('password',password)
+      await sendAdminNotification(memberData.email, password);
       return newMember
     }
     else{const newMember = await Member.create(memberData);
@@ -42,6 +44,43 @@ exports.createMember = async (memberData) => {
     throw new Error("Failed to create member");
   }
 };
+const sendAdminNotification = async (email, password) => {
+  try {
+    
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', 
+      auth: {
+        user: 'taher1.ghrab@gmail.com', 
+        pass: 'tyhuqrkpmsmuvuqe' 
+      }
+    });
+
+    
+    const mailOptions = {
+      from: process.env.SMTP_USER, 
+      to: email, 
+      subject: 'Crampe ya fariss', 
+      text: `dear Firas ,
+
+You have been assigned as an admin. Here are your credentials:
+
+Email address: ${email}
+Password: ${password}
+
+Please change your password after logging in for the first time.
+
+Best regards,
+Your Team`
+    };
+
+    
+    await transporter.sendMail(mailOptions);
+    console.log('Admin notification email sent to:', email);
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+};
+
 
 exports.updateMember= async (memberId, newData)=> {
   console.log("member",memberId);

@@ -2,7 +2,8 @@ const express = require("express");
 const carbonemission = require("../controllers/CarbonEmission.js");
 const router = express.Router();
 const carbonemissions = require("../services/CarbonEmission.js");
-
+const authenticateToken = require("../Middleware/auth.middleware");
+require('dotenv').config();
 
 
 router.get("/",carbonemission.getAllCarboneEmission);

@@ -8,6 +8,7 @@ try {
     throw new Error("Failed to fetch");
 }
 
+
 }
 exports.createformule = async (formuleData) => {
     try {
